@@ -37,43 +37,69 @@ export default function Index() {
       )
     );
   };
+  
+  const handleAddResponse = (ticketId: string, content: string, isAIGenerated: boolean) => {
+    setTickets(
+      tickets.map((ticket) => {
+        if (ticket.id === ticketId) {
+          const responses = ticket.responses || [];
+          return {
+            ...ticket,
+            responses: [
+              ...responses,
+              {
+                id: `RESP-${Date.now()}`,
+                content,
+                createdAt: new Date().toISOString(),
+                createdBy: isAIGenerated ? "AI Assistant" : "Support Agent",
+                isAIGenerated,
+              },
+            ],
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return ticket;
+      })
+    );
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
       <header className="mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Support Ticket System</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Support Ticket System</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Submit and manage support tickets efficiently. Get help from our knowledge base or create a new ticket for personalized support.
         </p>
       </header>
 
-      <Card className="mb-8">
-        <CardHeader className="bg-primary/5 border-b">
+      <Card className="mb-8 glass-card animate-fade-in">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-b">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Support Dashboard</CardTitle>
+              <CardTitle className="text-gradient">Support Dashboard</CardTitle>
               <CardDescription>
                 Submit, view, and manage support requests
               </CardDescription>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden md:flex md:space-x-2">
               <Button
                 variant={activeTab === "create" ? "default" : "outline"}
                 onClick={() => setActiveTab("create")}
-                className="mr-2"
+                className="hover-scale"
               >
                 Submit Ticket
               </Button>
               <Button
                 variant={activeTab === "view" ? "default" : "outline"}
                 onClick={() => setActiveTab("view")}
-                className="mr-2"
+                className="hover-scale"
               >
                 View Tickets
               </Button>
               <Button
                 variant={activeTab === "knowledge" ? "default" : "outline"}
                 onClick={() => setActiveTab("knowledge")}
+                className="hover-scale"
               >
                 Knowledge Base
               </Button>
@@ -82,10 +108,10 @@ export default function Index() {
         </CardHeader>
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="md:hidden mb-6 w-full">
-              <TabsTrigger value="create" className="flex-1">Submit</TabsTrigger>
-              <TabsTrigger value="view" className="flex-1">View</TabsTrigger>
-              <TabsTrigger value="knowledge" className="flex-1">Knowledge</TabsTrigger>
+            <TabsList className="md:hidden mb-6 w-full bg-muted/50">
+              <TabsTrigger value="create" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">Submit</TabsTrigger>
+              <TabsTrigger value="view" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">View</TabsTrigger>
+              <TabsTrigger value="knowledge" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">Knowledge</TabsTrigger>
             </TabsList>
             
             <TabsContent value="create" className="mt-0">
@@ -95,7 +121,7 @@ export default function Index() {
             <TabsContent value="view" className="mt-0">
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-semibold">Support Tickets</h2>
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Support Tickets</h2>
                   <div className="flex space-x-2">
                     <Button
                       variant="outline"
@@ -104,6 +130,7 @@ export default function Index() {
                         // In a real app, this would refresh from the server
                         console.log("Refreshing tickets...");
                       }}
+                      className="hover-scale bg-white dark:bg-gray-800"
                     >
                       <ChevronsUpDown className="h-4 w-4 mr-2" />
                       Refresh
@@ -113,14 +140,15 @@ export default function Index() {
                 
                 <TicketList 
                   tickets={tickets} 
-                  onStatusChange={handleStatusChange} 
+                  onStatusChange={handleStatusChange}
+                  onAddResponse={handleAddResponse}
                 />
               </div>
             </TabsContent>
             
             <TabsContent value="knowledge" className="mt-0">
               <div className="space-y-6">
-                <h2 className="text-2xl font-semibold">Knowledge Base</h2>
+                <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Knowledge Base</h2>
                 <p className="text-muted-foreground">
                   Browse our articles to find answers to common questions and issues.
                 </p>

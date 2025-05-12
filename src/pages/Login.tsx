@@ -60,12 +60,17 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <Card className="form-container glass-card">
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-white to-indigo-100 dark:from-blue-900 dark:via-gray-900 dark:to-indigo-900 opacity-70"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-[30vh] bg-gradient-to-t from-blue-500/10 to-transparent"></div>
+      </div>
+      
+      <Card className="form-container glass-card animate-fade-in relative z-10">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto w-16 h-16 bg-primary/10 flex items-center justify-center rounded-full">
-            <LogIn className="h-8 w-8 text-primary" />
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center rounded-full">
+            <LogIn className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           </div>
-          <CardTitle className="text-2xl font-bold">Support Ticket System</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gradient">Support Ticket System</CardTitle>
           <CardDescription>Log in to your account to get started</CardDescription>
         </CardHeader>
         <CardContent>
@@ -79,7 +84,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                className="bg-white/50 dark:bg-gray-900/50"
+                className="bg-white/50 dark:bg-gray-900/50 ring-focus"
               />
             </div>
             <div className="space-y-2">
@@ -91,10 +96,10 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
-                className="bg-white/50 dark:bg-gray-900/50"
+                className="bg-white/50 dark:bg-gray-900/50 ring-focus"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full btn-gradient hover-scale" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
@@ -108,18 +113,18 @@ export default function Login() {
               variant="outline" 
               onClick={() => handleLogin("customer")}
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 hover-scale bg-white/70 dark:bg-gray-800/70"
             >
-              <UserPlus className="h-4 w-4 mr-2" />
+              <UserPlus className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
               Customer
             </Button>
             <Button 
               variant="outline" 
               onClick={() => handleLogin("employee")}
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 hover-scale bg-white/70 dark:bg-gray-800/70"
             >
-              <Shield className="h-4 w-4 mr-2" />
+              <Shield className="h-4 w-4 mr-2 text-indigo-600 dark:text-indigo-400" />
               Employee
             </Button>
           </div>

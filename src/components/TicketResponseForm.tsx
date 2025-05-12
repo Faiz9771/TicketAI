@@ -63,18 +63,29 @@ export default function TicketResponseForm({
   };
 
   return (
-    <div className="space-y-4 mt-4 bg-white/50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+    <div className="space-y-4 mt-4 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-lg p-4 border border-blue-100 dark:border-blue-800 shadow-md animate-fade-in">
       <div className="flex justify-between items-center">
-        <h3 className="text-sm font-medium">Add Response</h3>
+        <h3 className="text-sm font-medium text-gradient">Add Response</h3>
         <Button
           size="sm"
           variant="outline"
           onClick={generateAIResponse}
           disabled={isGenerating}
-          className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700"
+          className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 hover-scale"
         >
-          <Wand className="h-4 w-4 mr-2" />
-          {isGenerating ? "Generating..." : "Generate AI Response"}
+          <Wand className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
+          {isGenerating ? (
+            <>
+              <span className="animate-pulse">Generating</span>
+              <span className="ml-1 inline-flex">
+                <span className="animate-bounce-subtle delay-100">.</span>
+                <span className="animate-bounce-subtle delay-200">.</span>
+                <span className="animate-bounce-subtle delay-300">.</span>
+              </span>
+            </>
+          ) : (
+            "Generate AI Response"
+          )}
         </Button>
       </div>
       
@@ -83,11 +94,11 @@ export default function TicketResponseForm({
         onChange={(e) => setResponse(e.target.value)}
         placeholder="Type your response here..."
         rows={4}
-        className="bg-white dark:bg-gray-800 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="bg-white dark:bg-gray-800 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-inner"
       />
       
       <div className="flex justify-end">
-        <Button onClick={handleSubmit} className="transition-all duration-200 hover:scale-105">
+        <Button onClick={handleSubmit} className="btn-gradient transition-all duration-200 hover:scale-105 shadow-md">
           Submit Response
         </Button>
       </div>
