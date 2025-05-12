@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,70 +39,72 @@ export default function CustomerDashboard() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 animate-fade-in">
-      <header className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Customer Support Portal</h1>
-          <p className="text-muted-foreground">Submit and track your support requests</p>
+    <div className="container mx-auto py-8 px-4 max-w-5xl">
+      <header className="mb-8 text-center">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text pb-2">Customer Support Portal</h1>
+        <p className="text-muted-foreground text-lg">Submit and track your support requests</p>
+        <div className="flex justify-center mt-4">
+          <Button variant="outline" className="hover-scale shadow-md bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 border border-indigo-100 dark:border-indigo-800" asChild>
+            <Link to="/admin">
+              <User className="h-4 w-4 mr-2" /> Switch to Employee View
+            </Link>
+          </Button>
         </div>
-        <Button variant="outline" className="hover-scale bg-white/70 dark:bg-gray-800/70" asChild>
-          <Link to="/admin">
-            <User className="h-4 w-4 mr-2" /> Switch to Employee View
-          </Link>
-        </Button>
       </header>
 
-      <div className="flex items-center mb-6 bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-lg">
-        <div className="bg-blue-100 dark:bg-blue-900/50 p-2 rounded-full">
-          <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+      <div className="flex items-center mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 p-4 rounded-xl shadow-md border border-indigo-100 dark:border-indigo-800">
+        <div className="bg-indigo-100 dark:bg-indigo-900/50 p-3 rounded-full shadow-inner">
+          <User className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
         </div>
         <div className="ml-3">
-          <p className="text-sm font-medium">Logged in as <span className="text-blue-600 dark:text-blue-400">John Doe</span></p>
+          <p className="text-sm font-medium">Logged in as <span className="text-indigo-600 dark:text-indigo-400 font-semibold">John Doe</span></p>
           <p className="text-xs text-muted-foreground">john@example.com</p>
         </div>
       </div>
 
-      <Card className="mb-8 glass-card">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-b">
-          <CardTitle className="text-gradient">Support Dashboard</CardTitle>
-          <CardDescription>
+      <Card className="mb-8 shadow-xl border-0 bg-gradient-to-br from-white to-indigo-50/80 dark:from-gray-900/90 dark:to-indigo-950/50 overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/30 dark:to-purple-900/30 border-b border-indigo-100 dark:border-indigo-800">
+          <CardTitle className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 text-transparent bg-clip-text">Support Dashboard</CardTitle>
+          <CardDescription className="text-indigo-600/70 dark:text-indigo-300/70">
             Submit new tickets or check the status of your existing tickets
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6 w-full bg-muted/50">
-              <TabsTrigger value="create" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
+        <CardContent className="p-0">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full rounded-none bg-indigo-50/80 dark:bg-indigo-950/30 p-0">
+              <TabsTrigger value="create" className="flex-1 py-4 rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-inner">
                 <FileText className="h-4 w-4 mr-2" />
                 Submit a Ticket
               </TabsTrigger>
-              <TabsTrigger value="mytickets" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
+              <TabsTrigger value="mytickets" className="flex-1 py-4 rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-inner">
                 <MessageSquare className="h-4 w-4 mr-2" />
                 My Tickets
               </TabsTrigger>
-              <TabsTrigger value="knowledge" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
+              <TabsTrigger value="knowledge" className="flex-1 py-4 rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-inner">
                 <BookOpen className="h-4 w-4 mr-2" />
                 Knowledge Base
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="create" className="mt-0">
-              <TicketForm onSubmit={handleTicketSubmit} />
-            </TabsContent>
-            
-            <TabsContent value="mytickets" className="mt-0">
-              <CustomerTicketList tickets={tickets} />
-            </TabsContent>
-            
-            <TabsContent value="knowledge" className="mt-0">
-              <div className="space-y-6">
-                <h2 className="text-2xl font-semibold text-gradient">Knowledge Base</h2>
-                <p className="text-muted-foreground">
-                  Browse our articles to find answers to common questions and issues.
-                </p>
-                <KnowledgeBase articles={mockKnowledgeBase} />
-              </div>
-            </TabsContent>
+            <div className="p-6">
+              <TabsContent value="create" className="mt-0 animate-fade-in">
+                <TicketForm onSubmit={handleTicketSubmit} />
+              </TabsContent>
+              
+              <TabsContent value="mytickets" className="mt-0 animate-fade-in">
+                <CustomerTicketList tickets={tickets} />
+              </TabsContent>
+              
+              <TabsContent value="knowledge" className="mt-0 animate-fade-in">
+                <div className="space-y-6">
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-indigo-700 to-purple-700 text-transparent bg-clip-text">Knowledge Base</h2>
+                  <p className="text-muted-foreground">
+                    Browse our articles to find answers to common questions and issues.
+                  </p>
+                  <KnowledgeBase articles={mockKnowledgeBase} />
+                </div>
+              </TabsContent>
+            </div>
           </Tabs>
         </CardContent>
       </Card>
