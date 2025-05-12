@@ -1,19 +1,17 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockTickets, mockKnowledgeBase } from "../utils/mockData";
 import TicketForm from "../components/TicketForm";
 import { Ticket } from "../types/ticket";
 import KnowledgeBase from "../components/KnowledgeBase";
 import { Button } from "@/components/ui/button";
-import { LogOut, FileText, MessageSquare, BookOpen, User } from "lucide-react";
+import { FileText, MessageSquare, BookOpen, User } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import CustomerTicketList from "../components/CustomerTicketList";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CustomerDashboard() {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [tickets, setTickets] = useState<Ticket[]>(
     // Filter mock tickets to only show those belonging to this customer
@@ -39,11 +37,6 @@ export default function CustomerDashboard() {
     });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("userRole");
-    navigate("/login");
-  };
-
   return (
     <div className="container mx-auto py-8 px-4 animate-fade-in">
       <header className="mb-8 flex justify-between items-center">
@@ -51,8 +44,10 @@ export default function CustomerDashboard() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Customer Support Portal</h1>
           <p className="text-muted-foreground">Submit and track your support requests</p>
         </div>
-        <Button variant="outline" onClick={handleLogout} className="hover-scale bg-white/70 dark:bg-gray-800/70">
-          <LogOut className="h-4 w-4 mr-2" /> Logout
+        <Button variant="outline" className="hover-scale bg-white/70 dark:bg-gray-800/70" asChild>
+          <Link to="/admin">
+            <User className="h-4 w-4 mr-2" /> Switch to Employee View
+          </Link>
         </Button>
       </header>
 

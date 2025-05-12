@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Ticket, TicketStatus } from "../types/ticket";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockTickets } from "../utils/mockData";
@@ -8,7 +9,7 @@ import TicketList from "../components/TicketList";
 import KnowledgeBase from "../components/KnowledgeBase";
 import { mockKnowledgeBase } from "../utils/mockData";
 import { Button } from "@/components/ui/button";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, User } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Index() {
@@ -66,11 +67,18 @@ export default function Index() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <header className="mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Support Ticket System</h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Submit and manage support tickets efficiently. Get help from our knowledge base or create a new ticket for personalized support.
-        </p>
+      <header className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Support Ticket System</h1>
+          <p className="text-muted-foreground max-w-2xl">
+            Submit and manage support tickets efficiently. Get help from our knowledge base or create a new ticket for personalized support.
+          </p>
+        </div>
+        <Button variant="outline" className="hover-scale bg-white/70 dark:bg-gray-800/70" asChild>
+          <Link to="/admin">
+            <User className="h-4 w-4 mr-2" /> Switch to Employee View
+          </Link>
+        </Button>
       </header>
 
       <Card className="mb-8 glass-card animate-fade-in">

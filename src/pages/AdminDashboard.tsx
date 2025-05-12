@@ -1,18 +1,17 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockTickets, mockKnowledgeBase } from "../utils/mockData";
 import TicketList from "../components/TicketList";
 import KnowledgeBase from "../components/KnowledgeBase";
 import { Button } from "@/components/ui/button";
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, User } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Ticket, TicketStatus } from "../types/ticket";
 import TicketResponseForm from "../components/TicketResponseForm";
 
 export default function AdminDashboard() {
-  const navigate = useNavigate();
   const [tickets, setTickets] = useState<Ticket[]>(mockTickets);
   const [activeTab, setActiveTab] = useState("tickets");
 
@@ -50,28 +49,25 @@ export default function AdminDashboard() {
     );
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("userRole");
-    navigate("/login");
-  };
-
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 animate-fade-in">
       <header className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Admin Support Dashboard</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Admin Support Dashboard</h1>
           <p className="text-muted-foreground">Manage and respond to customer support tickets</p>
         </div>
-        <Button variant="outline" onClick={handleLogout}>
-          <LogOut className="h-4 w-4 mr-2" /> Logout
+        <Button variant="outline" className="hover-scale bg-white/70 dark:bg-gray-800/70" asChild>
+          <Link to="/">
+            <User className="h-4 w-4 mr-2" /> Switch to Customer View
+          </Link>
         </Button>
       </header>
 
-      <Card className="mb-8">
-        <CardHeader className="bg-primary/5 border-b">
+      <Card className="mb-8 glass-card">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-b">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Support Management</CardTitle>
+              <CardTitle className="text-gradient">Support Management</CardTitle>
               <CardDescription>
                 View and manage all customer support requests
               </CardDescription>
@@ -80,16 +76,22 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6 w-full">
-              <TabsTrigger value="tickets" className="flex-1">Manage Tickets</TabsTrigger>
-              <TabsTrigger value="knowledge" className="flex-1">Knowledge Base</TabsTrigger>
-              <TabsTrigger value="analytics" className="flex-1">Analytics</TabsTrigger>
+            <TabsList className="mb-6 w-full bg-muted/50">
+              <TabsTrigger value="tickets" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
+                Manage Tickets
+              </TabsTrigger>
+              <TabsTrigger value="knowledge" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
+                Knowledge Base
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
+                Analytics
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="tickets" className="mt-0">
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-semibold">Support Tickets</h2>
+                  <h2 className="text-2xl font-semibold text-gradient">Support Tickets</h2>
                   <div className="flex space-x-2">
                     <Button
                       variant="outline"
@@ -98,6 +100,7 @@ export default function AdminDashboard() {
                         // In a real app, this would refresh from the server
                         console.log("Refreshing tickets...");
                       }}
+                      className="hover-scale bg-white dark:bg-gray-800"
                     >
                       <ChevronsUpDown className="h-4 w-4 mr-2" />
                       Refresh
