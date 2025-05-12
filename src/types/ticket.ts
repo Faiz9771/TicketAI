@@ -9,6 +9,8 @@ export type TicketCategory =
   | "account" 
   | "general";
 
+export type UserRole = "customer" | "employee" | "admin";
+
 export interface Ticket {
   id: string;
   title: string;
@@ -21,6 +23,16 @@ export interface Ticket {
   createdAt: string;
   updatedAt: string;
   attachments?: string[];
+  responses?: TicketResponse[];
+}
+
+export interface TicketResponse {
+  id: string;
+  ticketId: string;
+  content: string;
+  createdAt: string;
+  createdBy: string;
+  isAIGenerated: boolean;
 }
 
 export interface KnowledgeArticle {
@@ -30,3 +42,4 @@ export interface KnowledgeArticle {
   category: TicketCategory;
   tags: string[];
 }
+

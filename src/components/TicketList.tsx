@@ -11,14 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface TicketListProps {
   tickets: Ticket[];
   onStatusChange: (ticketId: string, newStatus: TicketStatus) => void;
+  onAddResponse: (ticketId: string, content: string, isAIGenerated: boolean) => void;
 }
 
-export default function TicketList({ tickets, onStatusChange }: TicketListProps) {
+export default function TicketList({ tickets, onStatusChange, onAddResponse }: TicketListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
@@ -123,6 +124,7 @@ export default function TicketList({ tickets, onStatusChange }: TicketListProps)
               key={ticket.id} 
               ticket={ticket} 
               onStatusChange={onStatusChange}
+              onAddResponse={onAddResponse}
             />
           ))
         )}

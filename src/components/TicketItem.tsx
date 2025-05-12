@@ -14,14 +14,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import TicketResponseForm from "./TicketResponseForm";
 
 interface TicketItemProps {
   ticket: Ticket;
   onStatusChange: (ticketId: string, newStatus: TicketStatus) => void;
+  onAddResponse: (ticketId: string, content: string, isAIGenerated: boolean) => void;
 }
 
-export default function TicketItem({ ticket, onStatusChange }: TicketItemProps) {
+export default function TicketItem({ ticket, onStatusChange, onAddResponse }: TicketItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showResponseForm, setShowResponseForm] = useState(false);
 
   const handleStatusChange = (newStatus: string) => {
     onStatusChange(ticket.id, newStatus as TicketStatus);
@@ -77,7 +80,7 @@ export default function TicketItem({ ticket, onStatusChange }: TicketItemProps) 
         </div>
       </CardHeader>
       
-      <CardContent className={isExpanded ? "" : "truncate"}>
+      <CardContent className={isExpanded ? "" : ""}>
         <div className="flex flex-col space-y-2">
           <div className="flex items-center text-sm text-muted-foreground">
             <User className="h-4 w-4 mr-1" />
@@ -93,11 +96,36 @@ export default function TicketItem({ ticket, onStatusChange }: TicketItemProps) 
             </Badge>
           </div>
           
-          <p className="mt-2">{ticket.description}</p>
+          <p className={isExpanded ? "mt-2" : "mt-2 line-clamp-2"}>{ticket.description}</p>
+
+          {isExpanded && ticket.responses && ticket.responses.length > 0 && (
+            <div className="mt-4 space-y-4">
+              <h4 className="text-sm font-semibold">Responses:</h4>
+              {ticket.responses.map((response) => (
+                <div key={response.id} className="bg-muted p-3 rounded-md">
+                  <p className="text-sm mb-1">{response.content}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {response.createdBy} • {formattedDate(response.createdAt)}
+                    {response.isAIGenerated && (
+                      <Badge variant="outline" className="ml-2 text-xs">AI Generated</Badge>
+                    )}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {isExpanded && showResponseForm && (
+            <TicketResponseForm 
+              ticketId={ticket.id}
+              ticketContent={ticket.description}
+              onAddResponse={onAddResponse}
+            />
+          )}
         </div>
       </CardContent>
       
-      <CardFooter className="flex justify-between pt-2">
+      <CardFooter className="flex justify-between pt-2 flex-wrap gap-2">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -106,7 +134,7 @@ export default function TicketItem({ ticket, onStatusChange }: TicketItemProps) 
           {isExpanded ? "Show Less" : "Show More"}
         </Button>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 flex-wrap">
           <Select defaultValue={ticket.status} onValueChange={handleStatusChange}>
             <SelectTrigger className="w-32">
               <SelectValue placeholder="Status" />
@@ -118,9 +146,27 @@ export default function TicketItem({ ticket, onStatusChange }: TicketItemProps) 
             </SelectContent>
           </Select>
           
-          <Button size="sm" variant="outline">
-            <MessageSquare className="h-4 w-4 mr-2" /> Reply
-          </Button>
+          {isExpanded ? (
+            <Button 
+              size="sm" 
+              variant={showResponseForm ? "default" : "outline"}
+              onClick={() => setShowResponseForm(!showResponseForm)}
+            >
+              <MessageSquare className="h-4 w-4 mr-2" /> 
+              {showResponseForm ? "Cancel Reply" : "Reply"}
+            </Button>
+          ) : (
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={() => {
+                setIsExpanded(true);
+                setShowResponseForm(true);
+              }}
+            >
+              <MessageSquare className="h-4 w-4 mr-2" /> Reply
+            </Button>
+          )}
         </div>
       </CardFooter>
     </Card>
