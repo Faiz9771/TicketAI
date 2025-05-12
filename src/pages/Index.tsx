@@ -49,6 +49,7 @@ export default function Index() {
               ...responses,
               {
                 id: `RESP-${Date.now()}`,
+                ticketId: ticket.id,
                 content,
                 createdAt: new Date().toISOString(),
                 createdBy: isAIGenerated ? "AI Assistant" : "Support Agent",
