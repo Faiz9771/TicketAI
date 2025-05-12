@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { UserRole } from "../types/ticket";
 import { useToast } from "@/hooks/use-toast";
+import { LogIn, UserPlus, Shield } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -58,11 +59,14 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Support Ticket System</CardTitle>
-          <CardDescription>Log in to your account</CardDescription>
+    <div className="auth-page">
+      <Card className="form-container glass-card">
+        <CardHeader className="text-center space-y-2">
+          <div className="mx-auto w-16 h-16 bg-primary/10 flex items-center justify-center rounded-full">
+            <LogIn className="h-8 w-8 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-bold">Support Ticket System</CardTitle>
+          <CardDescription>Log in to your account to get started</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,6 +79,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
+                className="bg-white/50 dark:bg-gray-900/50"
               />
             </div>
             <div className="space-y-2">
@@ -86,6 +91,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
+                className="bg-white/50 dark:bg-gray-900/50"
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
@@ -93,24 +99,28 @@ export default function Login() {
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex-col space-y-4">
+        <CardFooter className="flex-col space-y-4 border-t pt-4">
           <div className="text-center text-sm text-muted-foreground">
-            For demo purposes:
+            For demo purposes, choose a role:
           </div>
           <div className="flex justify-center space-x-2">
             <Button 
               variant="outline" 
               onClick={() => handleLogin("customer")}
               disabled={isLoading}
+              className="flex-1"
             >
-              Login as Customer
+              <UserPlus className="h-4 w-4 mr-2" />
+              Customer
             </Button>
             <Button 
               variant="outline" 
               onClick={() => handleLogin("employee")}
               disabled={isLoading}
+              className="flex-1"
             >
-              Login as Employee
+              <Shield className="h-4 w-4 mr-2" />
+              Employee
             </Button>
           </div>
         </CardFooter>

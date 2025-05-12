@@ -63,7 +63,7 @@ export default function TicketResponseForm({
   };
 
   return (
-    <div className="space-y-4 mt-4">
+    <div className="space-y-4 mt-4 bg-white/50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
       <div className="flex justify-between items-center">
         <h3 className="text-sm font-medium">Add Response</h3>
         <Button
@@ -71,6 +71,7 @@ export default function TicketResponseForm({
           variant="outline"
           onClick={generateAIResponse}
           disabled={isGenerating}
+          className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700"
         >
           <Wand className="h-4 w-4 mr-2" />
           {isGenerating ? "Generating..." : "Generate AI Response"}
@@ -82,10 +83,11 @@ export default function TicketResponseForm({
         onChange={(e) => setResponse(e.target.value)}
         placeholder="Type your response here..."
         rows={4}
+        className="bg-white dark:bg-gray-800 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
       
       <div className="flex justify-end">
-        <Button onClick={handleSubmit}>
+        <Button onClick={handleSubmit} className="transition-all duration-200 hover:scale-105">
           Submit Response
         </Button>
       </div>
