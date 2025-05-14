@@ -1,172 +1,262 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Navigation from '../components/Navigation';
+import { Button } from '@/components/ui/button';
+import { LayoutDashboard, TicketIcon, Users, Settings, LogOut, User, RefreshCw } from 'lucide-react';
+import { ticketAPI, userAPI } from '../lib/api';
+import { Link } from 'react-router-dom';
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockTickets, mockKnowledgeBase } from "../utils/mockData";
-import TicketList from "../components/TicketList";
-import KnowledgeBase from "../components/KnowledgeBase";
-import { Button } from "@/components/ui/button";
-import { ChevronsUpDown, User } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Ticket, TicketStatus } from "../types/ticket";
+interface Ticket {
+  id: string;
+  status: string;
+  priority: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  customerId: string;
+  customerName: string;
+}
+
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  ticketCount: number;
+}
 
 export default function AdminDashboard() {
-  const [tickets, setTickets] = useState<Ticket[]>(mockTickets);
-  const [activeTab, setActiveTab] = useState("tickets");
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleStatusChange = (ticketId: string, newStatus: TicketStatus) => {
-    setTickets(
-      tickets.map((ticket) =>
-        ticket.id === ticketId
-          ? { ...ticket, status: newStatus, updatedAt: new Date().toISOString() }
-          : ticket
-      )
-    );
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [ticketsData, customersData] = await Promise.all([
+        ticketAPI.getAll(),
+        userAPI.getAll()
+      ]);
+      setTickets(ticketsData || []);
+      setCustomers(customersData || []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setTickets([]);
+      setCustomers([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAddResponse = (ticketId: string, responseContent: string, isAIGenerated: boolean = false) => {
-    setTickets(
-      tickets.map((ticket) =>
-        ticket.id === ticketId
-          ? { 
-              ...ticket, 
-              updatedAt: new Date().toISOString(),
-              responses: [
-                ...(ticket.responses || []),
-                {
-                  id: `RESP-${Date.now()}`,
-                  ticketId,
-                  content: responseContent,
-                  createdAt: new Date().toISOString(),
-                  createdBy: "Agent",
-                  isAIGenerated
-                }
-              ]
-            }
-          : ticket
-      )
-    );
-  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Calculate dashboard stats
+  const openTickets = tickets.filter(t => t.status === 'open').length;
+  const inProgressTickets = tickets.filter(t => t.status === 'in-progress').length;
+  const resolvedTickets = tickets.filter(t => t.status === 'resolved').length;
+  const totalCustomers = customers.length;
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-5xl">
-      <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-transparent bg-clip-text pb-2">Admin Support Dashboard</h1>
-        <p className="text-muted-foreground text-lg">Manage and respond to customer support tickets</p>
-        <div className="flex justify-center mt-4">
-          <Button variant="outline" className="hover-scale shadow-md bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 border border-purple-100 dark:border-purple-800" asChild>
-            <Link to="/">
-              <User className="h-4 w-4 mr-2" /> Switch to Customer View
-            </Link>
-          </Button>
-        </div>
-      </header>
-
-      <Card className="mb-8 shadow-xl border-0 bg-gradient-to-br from-white to-purple-50/80 dark:from-gray-900/90 dark:to-purple-950/50 overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-purple-100/50 to-pink-100/50 dark:from-purple-900/30 dark:to-pink-900/30 border-b border-purple-100 dark:border-purple-800">
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle className="text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 text-transparent bg-clip-text">Support Management</CardTitle>
-              <CardDescription className="text-purple-600/70 dark:text-purple-300/70">
-                View and manage all customer support requests
-              </CardDescription>
-            </div>
+    <div className="flex flex-col h-screen">
+      <Navigation />
+      <div className="flex flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900">
+        {/* Sidebar */}
+        <div className="h-full w-64 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col">
+          <div className="p-6">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Support Dashboard</p>
           </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full rounded-none bg-purple-50/80 dark:bg-purple-950/30 p-0">
-              <TabsTrigger value="tickets" className="flex-1 py-4 rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:text-purple-700 dark:data-[state=active]:text-purple-400 data-[state=active]:shadow-inner">
-                Manage Tickets
-              </TabsTrigger>
-              <TabsTrigger value="knowledge" className="flex-1 py-4 rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:text-purple-700 dark:data-[state=active]:text-purple-400 data-[state=active]:shadow-inner">
-                Knowledge Base
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex-1 py-4 rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:text-purple-700 dark:data-[state=active]:text-purple-400 data-[state=active]:shadow-inner">
-                Analytics
-              </TabsTrigger>
-            </TabsList>
-            
-            <div className="p-6">
-              <TabsContent value="tickets" className="mt-0 animate-fade-in">
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-semibold bg-gradient-to-r from-purple-700 to-pink-700 text-transparent bg-clip-text">Support Tickets</h2>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        // In a real app, this would refresh from the server
-                        console.log("Refreshing tickets...");
-                      }}
-                      className="hover-scale shadow-md bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 border border-purple-100 dark:border-purple-800"
-                    >
-                      <ChevronsUpDown className="h-4 w-4 mr-2" />
-                      Refresh
-                    </Button>
-                  </div>
-                  
-                  <TicketList 
-                    tickets={tickets} 
-                    onStatusChange={handleStatusChange}
-                    onAddResponse={handleAddResponse} 
-                  />
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="knowledge" className="mt-0 animate-fade-in">
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-purple-700 to-pink-700 text-transparent bg-clip-text">Knowledge Base Management</h2>
-                  <p className="text-muted-foreground">
-                    Create and manage articles to help customers find answers quickly.
-                  </p>
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md">Add New Article</Button>
-                  <KnowledgeBase articles={mockKnowledgeBase} />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="analytics" className="mt-0 animate-fade-in">
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-purple-700 to-pink-700 text-transparent bg-clip-text">Support Analytics</h2>
-                  <p className="text-muted-foreground">
-                    Monitor and analyze support performance metrics.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="bg-gradient-to-br from-white to-purple-50 dark:from-gray-900 dark:to-purple-900/20 border border-purple-100 dark:border-purple-800 shadow-md">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-purple-700 dark:text-purple-400">Total Tickets</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">{tickets.length}</p>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-br from-white to-purple-50 dark:from-gray-900 dark:to-purple-900/20 border border-purple-100 dark:border-purple-800 shadow-md">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-purple-700 dark:text-purple-400">Open Tickets</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">{tickets.filter(t => t.status === "open").length}</p>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-br from-white to-purple-50 dark:from-gray-900 dark:to-purple-900/20 border border-purple-100 dark:border-purple-800 shadow-md">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-purple-700 dark:text-purple-400">Resolved Tickets</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">{tickets.filter(t => t.status === "resolved").length}</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              </TabsContent>
+        
+          <div className="px-3 flex-1 space-y-1">
+            <Link 
+              to="/admin" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all bg-indigo-100 text-indigo-900 dark:bg-indigo-900/30 dark:text-indigo-100 font-medium"
+            >
+              <div className="w-6 h-6 text-indigo-600 dark:text-indigo-400">
+                <LayoutDashboard size={20} />
+              </div>
+              <span>Dashboard</span>
+            </Link>
+            <Link 
+              to="/admin/tickets" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-600 hover:text-indigo-900 hover:bg-indigo-50 dark:text-gray-400 dark:hover:text-indigo-100 dark:hover:bg-indigo-900/20"
+            >
+              <div className="w-6 h-6 text-gray-500 dark:text-gray-500">
+                <TicketIcon size={20} />
+              </div>
+              <span>Tickets</span>
+            </Link>
+            <Link 
+              to="/admin/customers" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-600 hover:text-indigo-900 hover:bg-indigo-50 dark:text-gray-400 dark:hover:text-indigo-100 dark:hover:bg-indigo-900/20"
+            >
+              <div className="w-6 h-6 text-gray-500 dark:text-gray-500">
+                <Users size={20} />
+              </div>
+              <span>Customers</span>
+            </Link>
+          </div>
+        
+          <div className="mt-auto border-t border-gray-200 dark:border-gray-800 p-3 space-y-1">
+            <Link 
+              to="/admin/settings" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-600 hover:text-indigo-900 hover:bg-indigo-50 dark:text-gray-400 dark:hover:text-indigo-100 dark:hover:bg-indigo-900/20"
+            >
+              <div className="w-6 h-6 text-gray-500 dark:text-gray-500">
+                <Settings size={20} />
+              </div>
+              <span>Settings</span>
+            </Link>
+            <Link 
+              to="/logout" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-600 hover:text-indigo-900 hover:bg-indigo-50 dark:text-gray-400 dark:hover:text-indigo-100 dark:hover:bg-indigo-900/20"
+            >
+              <div className="w-6 h-6 text-gray-500 dark:text-gray-500">
+                <LogOut size={20} />
+              </div>
+              <span>Logout</span>
+            </Link>
+          </div>
+        </div>
+        
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex items-center justify-between px-6">
+            <div className="flex items-center">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Dashboard Overview</h2>
             </div>
-          </Tabs>
-        </CardContent>
-      </Card>
-      
-      <footer className="text-center text-sm text-muted-foreground">
-        <p>Support Ticket System &copy; {new Date().getFullYear()}</p>
-      </footer>
+            
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchData}
+                disabled={loading}
+                className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                {loading ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                )}
+                Refresh
+              </Button>
+            </div>
+          </header>
+          
+          <main className="flex-1 overflow-y-auto p-6">
+            <div className="max-w-7xl mx-auto">
+              {/* Dashboard Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Open Tickets</CardTitle>
+                    <TicketIcon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{openTickets}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Active support requests
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                    <TicketIcon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{inProgressTickets}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Being worked on
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Resolved</CardTitle>
+                    <TicketIcon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{resolvedTickets}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Completed tickets
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{totalCustomers}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Registered users
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Recent Tickets</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {tickets.slice(0, 5).map(ticket => (
+                        <div key={ticket.id} className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">{ticket.title}</p>
+                            <p className="text-sm text-muted-foreground">
+                              From: {ticket.customerName}
+                            </p>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {new Date(ticket.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Recent Customers</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {customers.slice(0, 5).map(customer => (
+                        <div key={customer.id} className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">{customer.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {customer.email}
+                            </p>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {new Date(customer.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
+

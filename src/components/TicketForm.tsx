@@ -21,12 +21,16 @@ import { mockKnowledgeBase } from "../utils/mockData";
 
 interface TicketFormProps {
   onSubmit: (ticket: Omit<Ticket, "id" | "status" | "createdAt" | "updatedAt">) => void;
+  currentUser?: {
+    email: string;
+    name: string;
+  };
 }
 
-export default function TicketForm({ onSubmit }: TicketFormProps) {
+export default function TicketForm({ onSubmit, currentUser }: TicketFormProps) {
   const { toast } = useToast();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState(currentUser?.name || "");
+  const [email, setEmail] = useState(currentUser?.email || "");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<TicketCategory>("technical");

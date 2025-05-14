@@ -30,6 +30,7 @@ export default function TicketResponseForm({
       return;
     }
 
+    // Pass the response to the parent component
     onAddResponse(ticketId, response, false);
     
     toast({
@@ -37,29 +38,48 @@ export default function TicketResponseForm({
       description: "Your response has been added to the ticket",
     });
     
+    // Clear the response field after submission
     setResponse("");
   };
 
-  const generateAIResponse = () => {
+  const generateAIResponse = async () => {
     setIsGenerating(true);
     
-    // Simulate AI response generation
-    setTimeout(() => {
-      const aiResponses = [
-        "Thank you for reaching out. Based on our documentation, this issue can be resolved by clearing your browser cache and cookies. Please try this and let us know if the problem persists.",
-        "I understand your concern. This appears to be a known issue with the latest update. Our development team is working on a fix that should be released in the next 24-48 hours. In the meantime, you can use the previous version as a workaround.",
-        "Thanks for your patience. I've looked into your account and can confirm that your payment was processed successfully. The service should be activated within the next hour. Please let me know if you need further assistance."
-      ];
+    try {
+      // Call the actual API endpoint to generate a response
+      const response = await fetch(`/api/company-data/generate-reply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ticketId,
+          query: ticketContent
+        }),
+      });
       
-      const generatedResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-      setResponse(generatedResponse);
-      setIsGenerating(false);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate AI response');
+      }
+      
+      const data = await response.json();
+      setResponse(data.response);
       
       toast({
         title: "AI response generated",
         description: "You can edit the response before sending",
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Error generating AI response:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Failed to generate AI response',
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (

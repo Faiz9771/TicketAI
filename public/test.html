@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #4f46e5;
+        }
+        .link-container {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4f46e5;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .note {
+            background-color: #f3f4f6;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Route Test Page</h1>
+    <p>Click on the links below to test different routes:</p>
+    
+    <div class="link-container">
+        <a href="/" class="link">Customer Dashboard</a>
+        <a href="/admin" class="link">Admin Dashboard</a>
+        <a href="/admin-test" class="link">Admin Test</a>
+    </div>
+    
+    <div class="note">
+        <p><strong>Note:</strong> If you see a blank page when clicking on any of these links, the issue might be with:</p>
+        <ol>
+            <li>The component itself (errors in the code)</li>
+            <li>The routing configuration</li>
+            <li>Missing dependencies</li>
+        </ol>
+        <p>Check the browser console (F12) for any error messages.</p>
+    </div>
+</body>
+</html>

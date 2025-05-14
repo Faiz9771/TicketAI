@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// User model
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  password      String
+  role          UserRole  @default(CUSTOMER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  tickets       Ticket[]  @relation("TicketCreator")
+  assignedTickets Ticket[] @relation("TicketAssignee")
+  comments      Comment[]
+}
+
+enum UserRole {
+  ADMIN
+  AGENT
+  CUSTOMER
+}
+
+// Ticket model
+model Ticket {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  status      TicketStatus  @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  creatorId   String
+  creator     User          @relation("TicketCreator", fields: [creatorId], references: [id])
+  assigneeId  String?
+  assignee    User?         @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  categoryId  String
+  category    Category      @relation(fields: [categoryId], references: [id])
+  comments    Comment[]
+  tags        TagsOnTickets[]
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Category model
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  tickets     Ticket[]
+}
+
+// Comment model
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Tag model
+model Tag {
+  id          String          @id @default(uuid())
+  name        String          @unique
+  tickets     TagsOnTickets[]
+}
+
+// Many-to-many relationship between Ticket and Tag
+model TagsOnTickets {
+  ticketId    String
+  ticket      Ticket  @relation(fields: [ticketId], references: [id])
+  tagId       String
+  tag         Tag     @relation(fields: [tagId], references: [id])
+  assignedAt  DateTime @default(now())
+
+  @@id([ticketId, tagId])
+}
+
+model CompanyData {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  content     String
+  type        String   // 'faq' | 'documentation' | 'policy'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AIModelConfig {
+  id                String   @id @default(cuid())
+  modelName         String   @default("llama-2-7b-chat")
+  temperature       Float    @default(0.7)
+  maxTokens         Int      @default(2048)
+  lastTrainedAt     DateTime?
+  trainingStatus    String   @default("not_trained") // 'not_trained', 'training', 'trained', 'failed'
+  trainingProgress  Float    @default(0) // 0-100%
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

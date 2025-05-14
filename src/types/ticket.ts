@@ -24,6 +24,7 @@ export interface Ticket {
   updatedAt: string;
   attachments?: string[];
   responses?: TicketResponse[];
+  message?: string; // Added for resolved ticket responses
 }
 
 export interface TicketResponse {
